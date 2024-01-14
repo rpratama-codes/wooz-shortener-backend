@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user_types {
+  id    Int     @id @default(autoincrement())
+  type  String  @unique
+  users users[]
+
+  @@map("user_types")
+}
+
+model users {
+  id         Int      @id @default(autoincrement())
+  first_name String?
+  last_name  String?
+  user_type  String
+  email      String
+  password   String
+  user_uid   String   @unique @db.Uuid
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  urls       urls[]
+
+  user_types user_types @relation(fields: [user_type], references: [type], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("users")
+}
+
+model urls {
+  id           Int      @id @default(autoincrement())
+  title        String?
+  description  String?
+  url_original String
+  url_short    String   @unique
+  url_ttl      Int
+  url_uid      String   @db.Uuid
+  created_by   String   @db.Uuid
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user users @relation(fields: [created_by], references: [user_uid], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("urls")
+}
+
+model accessBlock {
+  id    Int    @id @default(autoincrement())
+  token String
+}
+
+model refreshAllow {
+  id    Int    @id @default(autoincrement())
+  token String
+}
