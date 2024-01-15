@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,19 +16,18 @@ model user_types {
 }
 
 model users {
-  id         Int      @id @default(autoincrement())
+  id         Int        @id @default(autoincrement())
   first_name String?
   last_name  String?
   user_type  String
-  email      String   @unique
+  email      String     @unique
   password   String
-  user_uid   String   @unique @db.Uuid
+  user_uid   String     @unique @db.Uuid
   user_photo String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
   urls       urls[]
-
-  user_types user_types @relation(fields: [user_type], references: [type], onDelete: Cascade, onUpdate: Cascade)
+  user_types user_types @relation(fields: [user_type], references: [type], onDelete: Cascade)
 
   @@map("users")
 }
@@ -42,13 +38,12 @@ model urls {
   description  String?
   url_original String
   url_short    String   @unique
-  url_ttl      Int
+  url_ttl      String
   url_uid      String   @db.Uuid
   created_by   String   @db.Uuid
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-
-  user users @relation(fields: [created_by], references: [user_uid], onDelete: Cascade, onUpdate: Cascade)
+  user         users    @relation(fields: [created_by], references: [user_uid], onDelete: Cascade)
 
   @@map("urls")
 }
