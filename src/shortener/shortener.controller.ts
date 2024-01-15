@@ -6,17 +6,26 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ShortenerService } from './shortener.service';
 import { CreateShortenerDto } from './dto/create-shortener.dto';
 import { UpdateShortenerDto } from './dto/update-shortener.dto';
+import { GetUser } from 'src/auth/decorator';
+import { JwtAuthGuard } from '../auth/guard';
 
 @Controller('shortener')
 export class ShortenerController {
   constructor(private readonly shortenerService: ShortenerService) {}
 
   @Post()
-  create(@Body() dto: CreateShortenerDto) {
+  @UseGuards(JwtAuthGuard)
+  create(@Body() dto: CreateShortenerDto, @GetUser() user: any) {
+    return this.shortenerService.create(dto, user);
+  }
+
+  @Post('guest')
+  createProtected(@Body() dto: CreateShortenerDto) {
     return this.shortenerService.create(dto);
   }
 

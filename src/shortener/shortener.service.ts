@@ -12,18 +12,21 @@ export class ShortenerService {
     private prisma: PrismaService,
   ) {}
 
-  async create(dto: CreateShortenerDto) {
+  async create(dto: CreateShortenerDto, user: any | undefined = undefined) {
     try {
-      const url_short = this.woozService.generateFourLetter();
-      const url_uid = uuidv4();
+      const url_short: string = this.woozService.generateFourLetter();
+      const url_uid: string = uuidv4();
       const currentDate = new Date();
 
       let url_ttl: string;
       let created_by: string;
 
-      if (dto.guest === true) {
+      if (!user) {
         url_ttl = (currentDate.getTime() + 3 * 60 * 60 * 1000).toString();
         created_by = 'e19a18f4-b37d-11ee-a506-0242ac120002';
+      } else {
+        url_ttl = (currentDate.getTime() + 3 * 24 * 60 * 60 * 1000).toString();
+        created_by = user.sub;
       }
 
       const url = await this.prisma.urls.create({
