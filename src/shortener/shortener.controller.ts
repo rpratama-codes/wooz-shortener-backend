@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   UseGuards,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { ShortenerService } from './shortener.service';
 import { CreateShortenerDto } from './dto/create-shortener.dto';
@@ -30,22 +32,30 @@ export class ShortenerController {
   }
 
   @Get()
-  findAll() {
-    return this.shortenerService.findAll();
+  @UseGuards(JwtAuthGuard)
+  findAll(@GetUser() user: any) {
+    return this.shortenerService.findAll(user);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.shortenerService.findOne(+id);
+  @Get(':url_short')
+  redirect(@Param('url_short') url_short: string) {
+    return this.shortenerService.redirect(url_short);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateShortenerDto) {
-    return this.shortenerService.update(+id, dto);
+  @Patch(':url_short')
+  @UseGuards(JwtAuthGuard)
+  update(
+    @Param('url_short') url_short: string,
+    @Body() dto: UpdateShortenerDto,
+    @GetUser() user: any,
+  ) {
+    return this.shortenerService.update(url_short, dto, user);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.shortenerService.remove(+id);
+  @Delete(':url_short')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  remove(@Param('url_short') url_short: string, @GetUser() user: any) {
+    return this.shortenerService.remove(url_short, user);
   }
 }

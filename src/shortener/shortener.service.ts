@@ -1,9 +1,16 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateShortenerDto } from './dto/create-shortener.dto';
 import { UpdateShortenerDto } from './dto/update-shortener.dto';
 import { WoozService } from 'src/wooz/wooz.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class ShortenerService {
@@ -49,19 +56,87 @@ export class ShortenerService {
     }
   }
 
-  findAll() {
-    return `This action returns all shortener`;
+  async findAll(usr: any) {
+    try {
+      const url = await this.prisma.urls.findMany({
+        where: { created_by: usr.sub },
+      });
+
+      if (!url) {
+        throw new NotFoundException('No record found');
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'ok',
+        data: url,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} shortener`;
+  async redirect(url_short: string) {
+    try {
+      const url = await this.prisma.urls.findFirst({
+        where: { url_short },
+        select: { url_original: true, url_short: true, url_ttl: true },
+      });
+
+      if (!url) {
+        throw new NotFoundException('No Record Found');
+      }
+
+      const currentTime: number = new Date().getTime();
+      const expire: number = parseInt(url.url_ttl);
+
+      if (currentTime > expire) {
+        throw new ForbiddenException('Link is expired');
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'ok',
+        url: url.url_original,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 
-  update(id: number, updateShortenerDto: UpdateShortenerDto) {
-    return `This action updates a #${id} shortener`;
+  async update(url_short: string, dto: UpdateShortenerDto, user: any) {
+    try {
+      const upd = await this.prisma.urls.update({
+        where: { created_by: user.sub, url_short },
+        data: {
+          title: dto.title,
+          description: dto.description,
+        },
+      });
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Url description updated',
+        data: upd,
+      };
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException();
+        }
+      }
+      throw error;
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} shortener`;
+  async remove(url_short: string, user: any) {
+    try {
+      await this.prisma.urls.delete({
+        where: { url_short, created_by: user.sub },
+      });
+      return new HttpException('Link deleted', 204);
+    } catch (error) {
+      throw error;
+    }
   }
 }
