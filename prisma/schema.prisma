@@ -23,7 +23,7 @@ model users {
   first_name String?
   last_name  String?
   user_type  String
-  email      String
+  email      String   @unique
   password   String
   user_uid   String   @unique @db.Uuid
   createdAt  DateTime @default(now())
