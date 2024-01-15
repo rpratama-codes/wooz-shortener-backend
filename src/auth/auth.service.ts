@@ -103,7 +103,7 @@ export class AuthService {
         refreshToken: await this.jwtService.signAsync(
           { ...payload, role: Roletype.refresh },
           {
-            secret: this.config.get('JWT_SECRET_ACCESS'),
+            secret: this.config.get('JWT_SECRET_REFRESH'),
             expiresIn: '7d',
           },
         ),
