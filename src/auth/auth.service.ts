@@ -1,26 +1,51 @@
-import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from './dto/login.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { ConflictException, HttpStatus, Injectable } from '@nestjs/common';
+import { RegisterDto } from './dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { v1 as uuidv1 } from 'uuid';
+import { UserTypes } from './entities';
+import * as argon2 from 'argon2';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
+  constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return `This action returns all auth`;
-  }
+  async register(dto: RegisterDto) {
+    try {
+      const user_uid = uuidv1();
+      const password = await argon2.hash(dto.password);
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
+      const regist = await this.prisma.users.create({
+        data: {
+          first_name: dto.first_name,
+          last_name: dto.last_name,
+          user_type: UserTypes.free,
+          user_uid,
+          email: dto.email,
+          password,
+        },
+        select: {
+          first_name: true,
+          last_name: true,
+          email: true,
+          user_type: true,
+          user_uid: true,
+        },
+      });
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Register succesful',
+        data: regist,
+      };
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ConflictException('Email is already registered');
+        }
+      }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+      throw error;
+    }
   }
 }
