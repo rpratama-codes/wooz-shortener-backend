@@ -13,6 +13,6 @@ describe('WoozService', () => {
   });
 
   it('Should return random 4 digit of A-Z a-z 0-9 string', () => {
-    expect(service.shortUrlwithFourLetter()).toHaveLength(4);
+    expect(service.generateFourLetter()).toHaveLength(4);
   });
 });

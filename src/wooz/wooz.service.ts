@@ -20,7 +20,7 @@ export class WoozService {
     return letters;
   }
 
-  public shortUrlwithFourLetter(): string {
+  public generateFourLetter(): string {
     const letters = this.generateLetter();
 
     let shortUrl: string = '';
