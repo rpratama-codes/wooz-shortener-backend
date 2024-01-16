@@ -79,10 +79,37 @@ export class AuthService {
         throw new BadRequestException('Wrong password');
       }
 
-      const payload = {
+      interface Payload {
+        sub: string;
+        user_type: string;
+      }
+
+      const payload: Payload = {
         sub: user.user_uid,
         user_type: user.user_type,
       };
+
+      const accessToken: string = await this.jwtService.signAsync(
+        { ...payload, role: Roletype.user },
+        {
+          secret: this.config.get('JWT_SECRET_ACCESS'),
+          expiresIn: '15m',
+        },
+      );
+
+      const refreshToken: string = await this.jwtService.signAsync(
+        { ...payload, role: Roletype.refresh },
+        {
+          secret: this.config.get('JWT_SECRET_REFRESH'),
+          expiresIn: '7d',
+        },
+      );
+
+      await this.prisma.refreshAllow.create({
+        data: {
+          token: refreshToken,
+        },
+      });
 
       delete user.password;
       delete user.id;
@@ -93,20 +120,8 @@ export class AuthService {
         statusCode: HttpStatus.OK,
         message: 'Login successful',
         data: user,
-        accessToken: await this.jwtService.signAsync(
-          { ...payload, role: Roletype.user },
-          {
-            secret: this.config.get('JWT_SECRET_ACCESS'),
-            expiresIn: '15m',
-          },
-        ),
-        refreshToken: await this.jwtService.signAsync(
-          { ...payload, role: Roletype.refresh },
-          {
-            secret: this.config.get('JWT_SECRET_REFRESH'),
-            expiresIn: '7d',
-          },
-        ),
+        accessToken,
+        refreshToken,
       };
     } catch (error) {
       throw error;
