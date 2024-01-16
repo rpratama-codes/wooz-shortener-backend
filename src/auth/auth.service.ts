@@ -1,11 +1,12 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { LoginDto, RegisterDto, Roletype } from './dto';
+import { LoginDto, RefreshDto, RegisterDto, Roletype } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v1 as uuidv1 } from 'uuid';
 import { UserTypes } from './entities';
@@ -14,6 +15,10 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
+interface Payload {
+  sub: string;
+  user_type: string;
+}
 @Injectable()
 export class AuthService {
   constructor(
@@ -79,11 +84,6 @@ export class AuthService {
         throw new BadRequestException('Wrong password');
       }
 
-      interface Payload {
-        sub: string;
-        user_type: string;
-      }
-
       const payload: Payload = {
         sub: user.user_uid,
         user_type: user.user_type,
@@ -120,6 +120,54 @@ export class AuthService {
         statusCode: HttpStatus.OK,
         message: 'Login successful',
         data: user,
+        accessToken,
+        refreshToken,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async refreshToken(dto: RefreshDto) {
+    try {
+      const allow = await this.prisma.refreshAllow.findFirst({
+        where: { token: dto.refreshToken },
+        select: { token: true },
+      });
+
+      if (!allow) {
+        throw new ForbiddenException();
+      }
+
+      const payload: Payload = {
+        sub: dto.user.sub,
+        user_type: dto.user.user_type,
+      };
+
+      const accessToken: string = await this.jwtService.signAsync(
+        { ...payload, role: Roletype.user },
+        {
+          secret: this.config.get('JWT_SECRET_ACCESS'),
+          expiresIn: '15m',
+        },
+      );
+
+      const refreshToken: string = await this.jwtService.signAsync(
+        { ...payload, role: Roletype.refresh },
+        {
+          secret: this.config.get('JWT_SECRET_REFRESH'),
+          expiresIn: '7d',
+        },
+      );
+
+      this.prisma.$transaction([
+        this.prisma.refreshAllow.delete({ where: { token: dto.refreshToken } }),
+        this.prisma.refreshAllow.create({ data: { token: refreshToken } }),
+      ]);
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Refresh generated',
         accessToken,
         refreshToken,
       };
