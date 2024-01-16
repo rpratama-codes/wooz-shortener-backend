@@ -41,6 +41,7 @@ model urls {
   url_ttl      String
   url_uid      String   @db.Uuid
   created_by   String   @db.Uuid
+  session_id   String?  @db.Uuid
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   user         users    @relation(fields: [created_by], references: [user_uid], onDelete: Cascade)

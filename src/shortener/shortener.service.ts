@@ -27,10 +27,12 @@ export class ShortenerService {
 
       let url_ttl: string;
       let created_by: string;
+      let session_id: string | undefined;
 
       if (!user) {
         url_ttl = (currentDate.getTime() + 3 * 60 * 60 * 1000).toString();
         created_by = 'e19a18f4-b37d-11ee-a506-0242ac120002';
+        session_id = dto.session_id;
       } else {
         url_ttl = (currentDate.getTime() + 3 * 24 * 60 * 60 * 1000).toString();
         created_by = user.sub;
@@ -43,6 +45,7 @@ export class ShortenerService {
           url_ttl,
           url_uid,
           created_by,
+          session_id,
         },
       });
 
