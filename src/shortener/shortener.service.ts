@@ -33,8 +33,14 @@ export class ShortenerService {
         url_ttl = (currentDate.getTime() + 3 * 60 * 60 * 1000).toString();
         created_by = 'e19a18f4-b37d-11ee-a506-0242ac120002';
         session_id = dto.session_id;
-      } else {
+      } else if (user.user_type === 'free') {
         url_ttl = (currentDate.getTime() + 3 * 24 * 60 * 60 * 1000).toString();
+        created_by = user.sub;
+      } else if (user.user_type === 'paid') {
+        url_ttl = (
+          currentDate.getTime() +
+          365 * 24 * 60 * 60 * 1000
+        ).toString();
         created_by = user.sub;
       }
 
