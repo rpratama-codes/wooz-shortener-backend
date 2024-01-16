@@ -134,11 +134,30 @@ export class ShortenerService {
 
   async remove(url_short: string, user: any) {
     try {
-      await this.prisma.urls.delete({
-        where: { url_short, created_by: user.sub },
-      });
+      let session_id: string;
+      let created_by: string;
+
+      if (typeof user === 'string') {
+        session_id = user;
+
+        await this.prisma.urls.delete({
+          where: { session_id, url_short },
+        });
+      } else {
+        created_by = user.sub;
+
+        await this.prisma.urls.delete({
+          where: { created_by, url_short },
+        });
+      }
+
       return new HttpException('Link deleted', 204);
     } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException();
+        }
+      }
       throw error;
     }
   }

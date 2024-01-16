@@ -58,4 +58,13 @@ export class ShortenerController {
   remove(@Param('url_short') url_short: string, @GetUser() user: any) {
     return this.shortenerService.remove(url_short, user);
   }
+
+  @Delete('guest/:url_short/:session_id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  removeGuestUrl(
+    @Param('url_short') url_short: string,
+    @Param('session_id') session_id: string,
+  ) {
+    return this.shortenerService.remove(url_short, session_id);
+  }
 }
