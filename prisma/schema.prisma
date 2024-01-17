@@ -57,7 +57,7 @@ model urls {
 
 model Statistics {
   id        Int      @id @default(autoincrement())
-  url_uid   String   @db.Uuid
+  url_uid   String   @unique @db.Uuid
   visitors  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
