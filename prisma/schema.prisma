@@ -8,26 +8,30 @@ datasource db {
 }
 
 model user_types {
-  id    Int     @id @default(autoincrement())
-  type  String  @unique
+  id   Int    @id @default(autoincrement())
+  type String @unique
+
   users users[]
 
   @@map("user_types")
 }
 
 model users {
-  id         Int        @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   first_name String?
   last_name  String?
   user_type  String
-  email      String     @unique
+  email      String   @unique
   password   String
-  user_uid   String     @unique @db.Uuid
+  user_uid   String   @unique @db.Uuid
   user_photo String?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  urls       urls[]
-  user_types user_types @relation(fields: [user_type], references: [type], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user_types   user_types     @relation(fields: [user_type], references: [type], onDelete: Cascade)
+  urls         urls[]
+  accessBlock  accessBlock[]
+  refreshAllow refreshAllow[]
 
   @@map("users")
 }
@@ -39,22 +43,44 @@ model urls {
   url_original String
   url_short    String   @unique
   url_ttl      String
-  url_uid      String   @db.Uuid
+  url_uid      String   @unique @db.Uuid
   created_by   String   @db.Uuid
   session_id   String?  @db.Uuid
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  user         users    @relation(fields: [created_by], references: [user_uid], onDelete: Cascade)
+
+  user       users        @relation(fields: [created_by], references: [user_uid], onDelete: Cascade, onUpdate: Cascade)
+  Statistics Statistics[]
 
   @@map("urls")
 }
 
+model Statistics {
+  id        Int      @id @default(autoincrement())
+  url_uid   String   @db.Uuid
+  visitors  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  url urls @relation(fields: [url_uid], references: [url_uid], onDelete: Cascade, onUpdate: Cascade)
+}
+
 model accessBlock {
-  id    Int    @id @default(autoincrement())
-  token String @unique
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user_uid  String   @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user users @relation(fields: [user_uid], references: [user_uid], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model refreshAllow {
-  id    Int    @id @default(autoincrement())
-  token String @unique
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user_uid  String   @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user users @relation(fields: [user_uid], references: [user_uid], onDelete: Cascade, onUpdate: Cascade)
 }
