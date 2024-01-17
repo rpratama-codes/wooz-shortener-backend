@@ -89,12 +89,32 @@ export class ShortenerService {
     try {
       const url = await this.prisma.urls.findFirst({
         where: { url_short },
-        select: { url_original: true, url_short: true, url_ttl: true },
+        select: {
+          url_original: true,
+          url_short: true,
+          url_ttl: true,
+          url_uid: true,
+        },
       });
 
       if (!url) {
         throw new NotFoundException('No Record Found');
       }
+
+      await this.prisma.statistics.upsert({
+        where: {
+          url_uid: url.url_uid,
+        },
+        create: {
+          url_uid: url.url_uid,
+          visitors: 1,
+        },
+        update: {
+          visitors: {
+            increment: 1,
+          },
+        },
+      });
 
       const currentTime: number = new Date().getTime();
       const expire: number = parseInt(url.url_ttl);
