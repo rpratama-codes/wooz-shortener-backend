@@ -108,6 +108,7 @@ export class AuthService {
       await this.prisma.refreshAllow.create({
         data: {
           token: refreshToken,
+          user_uid: user.user_uid,
         },
       });
 
@@ -162,7 +163,9 @@ export class AuthService {
 
       this.prisma.$transaction([
         this.prisma.refreshAllow.delete({ where: { token: dto.refreshToken } }),
-        this.prisma.refreshAllow.create({ data: { token: refreshToken } }),
+        this.prisma.refreshAllow.create({
+          data: { token: refreshToken, user_uid: dto.user.sub },
+        }),
       ]);
 
       return {
