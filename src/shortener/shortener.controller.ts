@@ -15,6 +15,7 @@ import { CreateShortenerDto } from './dto/create-shortener.dto';
 import { UpdateShortenerDto } from './dto/update-shortener.dto';
 import { GetUser } from 'src/auth/decorator';
 import { JwtAuthGuard } from '../auth/guard';
+import { UserFromJwt } from 'src/auth/dto';
 
 @Controller('shortener')
 export class ShortenerController {
@@ -22,7 +23,7 @@ export class ShortenerController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Body() dto: CreateShortenerDto, @GetUser() user: any) {
+  create(@Body() dto: CreateShortenerDto, @GetUser() user: UserFromJwt) {
     return this.shortenerService.create(dto, user);
   }
 
@@ -33,7 +34,7 @@ export class ShortenerController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  findAll(@GetUser() user: any) {
+  findAll(@GetUser() user: UserFromJwt) {
     return this.shortenerService.findAll(user);
   }
 
@@ -47,7 +48,7 @@ export class ShortenerController {
   update(
     @Param('url_short') url_short: string,
     @Body() dto: UpdateShortenerDto,
-    @GetUser() user: any,
+    @GetUser() user: UserFromJwt,
   ) {
     return this.shortenerService.update(url_short, dto, user);
   }

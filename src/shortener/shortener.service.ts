@@ -11,6 +11,7 @@ import { WoozService } from 'src/wooz/wooz.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { UserFromJwt } from 'src/auth/dto';
 
 @Injectable()
 export class ShortenerService {
@@ -19,7 +20,10 @@ export class ShortenerService {
     private prisma: PrismaService,
   ) {}
 
-  async create(dto: CreateShortenerDto, user: any | undefined = undefined) {
+  async create(
+    dto: CreateShortenerDto,
+    user: UserFromJwt | undefined = undefined,
+  ) {
     try {
       const url_short: string = this.woozService.generateFourLetter();
       const url_uid: string = uuidv4();
@@ -65,7 +69,7 @@ export class ShortenerService {
     }
   }
 
-  async findAll(usr: any) {
+  async findAll(usr: UserFromJwt) {
     try {
       const url = await this.prisma.urls.findMany({
         where: { created_by: usr.sub },
@@ -133,7 +137,7 @@ export class ShortenerService {
     }
   }
 
-  async update(url_short: string, dto: UpdateShortenerDto, user: any) {
+  async update(url_short: string, dto: UpdateShortenerDto, user: UserFromJwt) {
     try {
       const upd = await this.prisma.urls.update({
         where: { created_by: user.sub, url_short },
@@ -158,7 +162,7 @@ export class ShortenerService {
     }
   }
 
-  async remove(url_short: string, user: any) {
+  async remove(url_short: string, user: UserFromJwt | string) {
     try {
       let session_id: string;
       let created_by: string;
