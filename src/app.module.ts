@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { WoozModule } from './wooz/wooz.module';
 import { ShortenerModule } from './shortener/shortener.module';
+import { AnalyticModule } from './analytic/analytic.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ShortenerModule } from './shortener/shortener.module';
     AuthModule,
     WoozModule,
     ShortenerModule,
+    AnalyticModule,
   ],
   controllers: [],
   providers: [],
