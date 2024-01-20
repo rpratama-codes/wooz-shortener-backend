@@ -5,10 +5,14 @@ import { AuthModule } from './auth/auth.module';
 import { WoozModule } from './wooz/wooz.module';
 import { ShortenerModule } from './shortener/shortener.module';
 import { AnalyticModule } from './analytic/analytic.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    CacheModule.register({
       isGlobal: true,
     }),
     PrismaModule,

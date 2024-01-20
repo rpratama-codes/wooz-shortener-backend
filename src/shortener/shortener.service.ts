@@ -2,6 +2,7 @@ import {
   ForbiddenException,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,10 +13,13 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { v4 as uuidv4 } from 'uuid';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { UserFromJwt } from 'src/auth/dto';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class ShortenerService {
   constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private woozService: WoozService,
     private prisma: PrismaService,
   ) {}
@@ -91,6 +95,13 @@ export class ShortenerService {
 
   async redirect(url_short: string) {
     try {
+      const checkCachae = await this.cacheManager.get(url_short);
+
+      if (checkCachae) {
+        console.log('get from cache', new Date());
+        return await this.cacheManager.get(url_short);
+      }
+
       const url = await this.prisma.urls.findFirst({
         where: { url_short },
         select: {
@@ -102,7 +113,9 @@ export class ShortenerService {
       });
 
       if (!url) {
-        throw new NotFoundException('No Record Found');
+        const NotFound = new NotFoundException('No Record Found');
+        await this.cacheManager.set(url_short, NotFound.getResponse());
+        throw NotFound;
       }
 
       await this.prisma.statistics.upsert({
@@ -127,11 +140,16 @@ export class ShortenerService {
         throw new ForbiddenException('Link is expired');
       }
 
-      return {
+      const returnValue = {
         statusCode: HttpStatus.OK,
         message: 'ok',
         url: url.url_original,
       };
+
+      console.log('create cache', new Date());
+      await this.cacheManager.set(url_short, returnValue);
+
+      return returnValue;
     } catch (error) {
       throw error;
     }
