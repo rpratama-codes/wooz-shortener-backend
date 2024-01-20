@@ -16,6 +16,7 @@ import { UpdateShortenerDto } from './dto/update-shortener.dto';
 import { GetUser } from 'src/auth/decorator';
 import { JwtAuthGuard } from '../auth/guard';
 import { UserFromJwt } from 'src/auth/dto';
+import { Throttle } from '@nestjs/throttler';
 
 @Controller('shortener')
 export class ShortenerController {
@@ -27,6 +28,7 @@ export class ShortenerController {
     return this.shortenerService.create(dto, user);
   }
 
+  @Throttle({ custom: { limit: 1, ttl: 2000 } })
   @Post('guest')
   createProtected(@Body() dto: CreateShortenerDto) {
     return this.shortenerService.create(dto);

@@ -7,11 +7,18 @@ import { ShortenerModule } from './shortener/shortener.module';
 import { AnalyticModule } from './analytic/analytic.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { redisConfig } from './configs/redisConfig';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { throttlerConfigService } from './configs/throttlerConfigService';
+import { ConfigsModule } from './configs/configs.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ThrottlerModule.forRootAsync({
+      useClass: throttlerConfigService,
     }),
     CacheModule.registerAsync(redisConfig),
     PrismaModule,
@@ -19,8 +26,14 @@ import { redisConfig } from './configs/redisConfig';
     WoozModule,
     ShortenerModule,
     AnalyticModule,
+    ConfigsModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
