@@ -12,9 +12,8 @@ export class throttlerConfigService implements ThrottlerOptionsFactory {
   public async createThrottlerOptions(): Promise<ThrottlerModuleOptions> {
     return [
       {
-        name: 'default',
         ttl: parseInt(this.config.get<string>('THROTTLE_TTL')),
-        limit: parseInt(this.config.get<string>('THROTTLE_TTL')),
+        limit: parseInt(this.config.get<string>('THROTTLE_LIMIT')),
       },
     ];
   }
