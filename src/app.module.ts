@@ -6,15 +6,14 @@ import { WoozModule } from './wooz/wooz.module';
 import { ShortenerModule } from './shortener/shortener.module';
 import { AnalyticModule } from './analytic/analytic.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { redisConfig } from './configs/redisConfig';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    CacheModule.register({
-      isGlobal: true,
-    }),
+    CacheModule.registerAsync(redisConfig),
     PrismaModule,
     AuthModule,
     WoozModule,
