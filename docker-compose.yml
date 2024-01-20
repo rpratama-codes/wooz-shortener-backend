@@ -20,3 +20,20 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: good-password
+
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6380:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    volumes:
+      - redis:/data
+
+volumes:
+  dev-db:
+    driver: local
+  test-db:
+    driver: local
+  redis:
+    driver: local
