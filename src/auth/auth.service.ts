@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
@@ -175,6 +176,24 @@ export class AuthService {
         refreshToken,
       };
     } catch (error) {
+      throw error;
+    }
+  }
+
+  async removeSession(dto: RefreshDto) {
+    try {
+      await this.prisma.refreshAllow.delete({
+        where: { token: dto.refreshToken },
+      });
+
+      return new HttpException('No Content', HttpStatus.NO_CONTENT);
+    } catch (error) {
+      console.log(error);
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          return new HttpException('No Content', HttpStatus.NO_CONTENT);
+        }
+      }
       throw error;
     }
   }

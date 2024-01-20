@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
@@ -32,5 +33,12 @@ export class AuthController {
   @UseGuards(RefreshGuard)
   refresh(@GetUser() dto: RefreshDto) {
     return this.authService.refreshToken(dto);
+  }
+
+  @Delete('remove-session')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(RefreshGuard)
+  removeSession(@GetUser() dto: RefreshDto) {
+    return this.authService.removeSession(dto);
   }
 }
