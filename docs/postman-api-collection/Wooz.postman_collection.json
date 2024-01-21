@@ -1,0 +1,502 @@
+{
+	"info": {
+		"_postman_id": "fa7ef0ac-29b9-437a-adc1-9b5aaaebd694",
+		"name": "Wooz",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17089615"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"first_name\": \"{{$randomFirstName}}\",\n    \"last_name\": \"{{$randomLastName}}\",\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/auth/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "\nThis endpoint is used to register a new user. Upon successful registration, it returns the user details along with a status code.\n\n### Request Body\n- **first_name** (text, required): The first name of the user.\n- **last_name** (text, required): The last name of the user.\n- **email** (text, required): The email address of the user.\n- **password** (text, required): The password for the user account.\n\n### Response\n- **statusCode** (number): The status code of the response.\n- **message** (text): Any additional message related to the response.\n- **data**\n  - **first_name** (text): The first name of the registered user.\n  - **last_name** (text): The last name of the registered user.\n  - **email** (text): The email address of the registered user.\n  - **user_type** (text): The type of user (if applicable).\n  - **user_uid** (text): The unique identifier for the registered user.\n\nExample:\n```json\n{\n    \"statusCode\": 0,\n    \"message\": \"\",\n    \"data\": {\n        \"first_name\": \"\",\n        \"last_name\": \"\",\n        \"email\": \"\",\n        \"user_type\": \"\",\n        \"user_uid\": \"\"\n    }\n}\n```\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/auth/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "This endpoint allows users to authenticate and login to the system. The HTTP POST request should be sent to {{url}}/auth/login with the following payload in the raw request body type:\n\n``` json\n{\n    \"email\": \"\",\n    \"password\": \"\"\n}\n\n ```\n\n### Response\n\n- Status: 200\n- Body:\n    \n    ``` json\n    {\n        \"statusCode\": 0,\n        \"message\": \"\",\n        \"data\": {\n            \"first_name\": \"\",\n            \"last_name\": \"\",\n            \"user_type\": \"\",\n            \"email\": \"\",\n            \"user_uid\": \"\",\n            \"user_photo\": null\n        },\n        \"accessToken\": \"\",\n        \"refreshToken\": \"\"\n    }\n    \n     ```\n    \n\nThe response includes a status code, a message, and user data such as first name, last name, user type, email, user UID, user photo, access token, and refresh token."
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{refreshToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/auth/refresh",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "\nThis endpoint is used to refresh the authentication tokens by making an HTTP POST request to {{url}}/auth/refresh. The request does not require a request body. Upon a successful execution, the response will have a status code of 200 and will include a JSON object with the keys \"statusCode\", \"message\", \"accessToken\", and \"refreshToken\". The \"accessToken\" and \"refreshToken\" are the new authentication tokens that can be used for subsequent API requests.\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Session",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{refreshToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/auth/remove-session",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"auth",
+								"remove-session"
+							]
+						},
+						"description": "This endpoint is used to delete a session for authentication.\n\nNo request body is required for this request.\n\nThe response to this request returns a status code of 204, indicating that the session has been successfully removed."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wooz Service",
+			"item": [
+				{
+					"name": "Short URL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"url\" : \"https://en.wikipedia.org/wiki/Wikipedia:URLShortener\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/shortener",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shortener"
+							]
+						},
+						"description": "This endpoint allows you to create a shortened version of a URL.\n\n### Request Body\n\n- `url` (string, required): The original URL that you want to shorten.\n    \n\n### Response\n\n- `statusCode` (number): The status code of the response.\n- `message` (string): Any additional message related to the response.\n- `data` (object): The shortened URL details.\n    - `id` (number): The unique identifier for the shortened URL.\n    - `title` (string): The title of the original URL, if available.\n    - `description` (string): The description of the original URL, if available.\n    - `url_original` (string): The original URL.\n    - `url_short` (string): The shortened URL.\n    - `url_ttl` (string): The time-to-live for the shortened URL.\n    - `url_uid` (string): The unique identifier for the shortened URL.\n    - `created_by` (string): The user who created the shortened URL.\n    - `session_id` (string): The session ID, if available.\n    - `createdAt` (string): The creation timestamp of the shortened URL.\n    - `updatedAt` (string): The timestamp when the shortened URL was last updated.\n\n### Example\n\n``` json\n{\n    \"url\": \"https://example.com\"\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Analytic",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/analytic",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"analytic"
+							]
+						},
+						"description": "This endpoint makes an HTTP GET request to retrieve analytics data. The request does not contain a request body.\n\nThe response to the last call had a status code of 200 and returned an array of objects. Each object in the array contains information about an analytic entry, including an ID, title, description, original URL, shortened URL, time-to-live for the URL, unique identifier for the URL, creator, session ID, creation and update timestamps, and statistics.\n\nThe user can use this endpoint to fetch analytics data for further analysis or reporting purposes."
+					},
+					"response": []
+				},
+				{
+					"name": "Get List Url",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/shortener",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shortener"
+							]
+						},
+						"description": "This endpoint makes an HTTP GET request to {{url}}/shortener to retrieve a list of shortened URLs. The request does not include a request body.\n\nThe response to the last execution had a status code of 200 and included a JSON object with the following structure:\n\n``` json\n{\n    \"statusCode\": 0,\n    \"message\": \"\",\n    \"data\": [\n        {\n            \"id\": 0,\n            \"title\": null,\n            \"description\": null,\n            \"url_original\": \"\",\n            \"url_short\": \"\",\n            \"url_ttl\": \"\",\n            \"url_uid\": \"\",\n            \"created_by\": \"\",\n            \"session_id\": null,\n            \"createdAt\": \"\",\n            \"updatedAt\": \"\"\n        }\n    ]\n}\n\n ```\n\nThe `data` field contains an array of objects, each representing a shortened URL. The properties of each object include `id`, `title`, `description`, `url_original`, `url_short`, `url_ttl`, `url_uid`, `created_by`, `session_id`, `createdAt`, and `updatedAt`."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Url Description",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Google\",\n    \"description\" : \"Google site\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/shortener/:url_short",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shortener",
+								":url_short"
+							],
+							"variable": [
+								{
+									"key": "url_short",
+									"value": "3JkY"
+								}
+							]
+						},
+						"description": "This HTTP PATCH request is used to update the details of a shortened URL by providing the URL short code in the endpoint. The request should contain a JSON payload with the fields \"title\" and \"description\" to update the title and description of the shortened URL.\n\n### Request Body\n\n- title (string, optional): The new title for the shortened URL.\n- description (string, optional): The new description for the shortened URL.\n    \n\n### Response\n\nUpon a successful update, the API returns a status code of 200 along with a JSON object containing the updated details of the shortened URL. The \"data\" object includes the updated \"id\", \"title\", \"description\", \"url_original\", \"url_short\", \"url_ttl\", \"url_uid\", \"created_by\", \"session_id\", \"createdAt\", and \"updatedAt\" fields.\n\nExample:\n\n``` json\n{\n    \"statusCode\": 0,\n    \"message\": \"\",\n    \"data\": {\n        \"id\": 0,\n        \"title\": \"\",\n        \"description\": \"\",\n        \"url_original\": \"\",\n        \"url_short\": \"\",\n        \"url_ttl\": \"\",\n        \"url_uid\": \"\",\n        \"created_by\": \"\",\n        \"session_id\": null,\n        \"createdAt\": \"\",\n        \"updatedAt\": \"\"\n    }\n}\n\n ```"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Url",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/shortener/:url_short",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shortener",
+								":url_short"
+							],
+							"variable": [
+								{
+									"key": "url_short",
+									"value": "3JkY"
+								}
+							]
+						},
+						"description": "\n## Delete Shortened URL\nThis endpoint is used to delete a specific shortened URL by providing the URL short code in the request URL.\n\n### Request Parameters\n- `url_short` (path): The shortened URL code to be deleted.\n\n### Response\n- Status: 204 - No Content\n\n"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wooz Basic Service",
+			"item": [
+				{
+					"name": "Get Redirect URL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/shortener/:url_short",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shortener",
+								":url_short"
+							],
+							"variable": [
+								{
+									"key": "url_short",
+									"value": "2Sz1",
+									"description": "Change this with generated short url"
+								}
+							]
+						},
+						"description": "This endpoint makes an HTTP GET request to retrieve the original URL associated with the provided short URL.\n\nThe request does not include a request body.\n\n### Response\n\n- Status: 200\n- Body:\n    \n    ``` json\n      {\n          \"statusCode\": 0,\n          \"message\": \"\",\n          \"url\": \"\"\n      }\n    \n     ```"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Wooz Guest Service",
+			"item": [
+				{
+					"name": "Short URL Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"session_id\": \"{{session_id}}\",\n    \"url\" : \"https://www.google.com\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/shortener/guest",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shortener",
+								"guest"
+							]
+						},
+						"description": "\nThis endpoint allows guest users to shorten a URL by making an HTTP POST request to {{url}}/shortener/guest. The request should include a JSON payload in the raw request body type with the keys \"session_id\" and \"url\".\n\n### Request Body\n- `session_id` (string): The session ID of the guest user.\n- `url` (string): The original URL that needs to be shortened.\n\n### Response\nUpon a successful request, the server responds with a status code 201 and a JSON object containing the shortened URL details.\n- `statusCode` (integer): Indicates the status of the response.\n- `message` (string): Additional information or error message.\n- `data` (object): Contains the details of the shortened URL, including its ID, original URL, shortened URL, time-to-live, unique identifier, creator, creation timestamp, and update timestamp.\n\nExample Response:\n```json\n{\n    \"statusCode\": 0,\n    \"message\": \"\",\n    \"data\": {\n        \"id\": 0,\n        \"title\": null,\n        \"description\": null,\n        \"url_original\": \"\",\n        \"url_short\": \"\",\n        \"url_ttl\": \"\",\n        \"url_uid\": \"\",\n        \"created_by\": \"\",\n        \"session_id\": \"\",\n        \"createdAt\": \"\",\n        \"updatedAt\": \"\"\n    }\n}\n```\n"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Guest URL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/shortener/guest/:url_short/:session_id",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"shortener",
+								"guest",
+								":url_short",
+								":session_id"
+							],
+							"variable": [
+								{
+									"key": "url_short",
+									"value": "0UI6"
+								},
+								{
+									"key": "session_id",
+									"value": "{{session_id}}"
+								}
+							]
+						},
+						"description": "This endpoint is used to delete a specific shortened URL for a guest user with a given session ID. The URL short code and session ID are provided as path parameters in the request URL."
+					},
+					"response": []
+				}
+			],
+			"description": "Woozify is a service that allows users to shorten URLs and generate QR codes. The features include shortening URLs, providing engagement analytics, and a QR Maker. The pricing types are guest, free, and paid."
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "localhost:9000",
+			"type": "string"
+		},
+		{
+			"key": "session_id",
+			"value": "ba5b6f0a-1f3f-4f69-b6af-4a91054c3b8c",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhNTMzMDliMC1iODFhLTExZWUtYjAxNi1kMTFlZWU0ZDdhYTgiLCJ1c2VyX3R5cGUiOiJmcmVlIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3MDU4MTM3MjIsImV4cCI6MTcwNTgxNDYyMn0.NT5DD-_ALMFnZ7UkKsUF1BvsyAr3-aAu9LMXlDmjZ5w",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhNTMzMDliMC1iODFhLTExZWUtYjAxNi1kMTFlZWU0ZDdhYTgiLCJ1c2VyX3R5cGUiOiJmcmVlIiwicm9sZSI6InJlZnJlc2giLCJpYXQiOjE3MDU4MTM1NDYsImV4cCI6MTcwNjQxODM0Nn0.QCof5cjC-jOet_0D349AocUHjIAsRGDhoXdwrUuEDoA",
+			"type": "string"
+		},
+		{
+			"key": "email",
+			"value": "user@example.com",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "Strong-password00",
+			"type": "string"
+		}
+	]
+}
