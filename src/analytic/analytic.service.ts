@@ -14,6 +14,11 @@ export class AnalyticService {
         include: {
           Statistics: true,
         },
+        orderBy: [
+          {
+            createdAt: 'desc',
+          },
+        ],
       });
 
       if (analytic.length === 0) {

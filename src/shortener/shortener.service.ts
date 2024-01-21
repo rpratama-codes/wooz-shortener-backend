@@ -77,6 +77,11 @@ export class ShortenerService {
     try {
       const url = await this.prisma.urls.findMany({
         where: { created_by: usr.sub },
+        orderBy: [
+          {
+            createdAt: 'desc',
+          },
+        ],
       });
 
       if (!url) {
