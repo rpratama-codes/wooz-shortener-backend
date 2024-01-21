@@ -45,12 +45,12 @@ Optional features:
 
 ### On Local Development  
 
-1. Clon this repo
+1. Clone this repo
 2. Setup the Database and Caching
 3. Setup the Environment Variable
 4. Install Dependencies ``yarn install``
 5. Run Database Migration & Seed
-6. Start the app
+6. Start the app ``yarn dev``
 
 ### On Production
 
@@ -58,11 +58,11 @@ There are various ways to run the application in production. Every detailed step
 
 ## Environment Variable
 
-For the environment variable there is file reference at root this project named ``.env.example``, use this as the reference to configuring environment variable for this app.
+For the environment variable there is file reference at root this project named ``.env.example``, use this as the reference to configuring environment variable for this app. **Important: All environment variables must be filled.**
 
 ## Database and Caching
 
-This project is has initiated with PostgreSQL DB, and Redis as the caching. and if you have Docker Engine or Docker Desktop installed on your development environment. you can setup using docker compose from this project. **the credential also available at** ``docker-compose.yml``. If not, you have to setup it manually and fill the environment variable that available on ``.env.example``.
+This project is has initiated with PostgreSQL DB, and Redis as the caching. and if you have Docker Engine or Docker Desktop installed on your development environment. you can setup using docker compose from this project. **the credential also available at** ``docker-compose.yml``, you can modify the file and run with command ``docker compose up -d``. If not, you have to setup it manually and fill the environment variable that available on ``.env.example``.
 
 > After correctly setting up the database, please follow the configuration below to run the application features correctly.
 
@@ -93,7 +93,7 @@ npx prisma studio
 
 [<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://documenter.getpostman.com/view/31887036/2s9YsT797i)
 
-The API documentation is available on the Postman API Documenter. References about the ``params``, ``query``, or ``body`` requests are also available there. Alternatively, you can directly import from docs/postman-api-collection/Wooz.postman_collection.json into your Postman app.
+The API documentation is available on the Postman API Documenter. References about the ``params``, ``query``, or ``body`` requests are also available there. Alternatively, you can directly import from ``docs/postman-api-collection/Wooz.postman_collection.json`` into your Postman app.
 
 ## Routing Table
 

@@ -10,16 +10,12 @@ import {
 import { LoginDto, RefreshDto, RegisterDto, Roletype } from './dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { v1 as uuidv1 } from 'uuid';
-import { UserTypes } from './entities';
+import { UserTypes, JwtPayloadType } from './entities';
 import * as argon2 from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
-interface Payload {
-  sub: string;
-  user_type: string;
-}
 @Injectable()
 export class AuthService {
   constructor(
@@ -85,7 +81,7 @@ export class AuthService {
         throw new BadRequestException('Wrong password');
       }
 
-      const payload: Payload = {
+      const payload: JwtPayloadType = {
         sub: user.user_uid,
         user_type: user.user_type,
       };
@@ -141,7 +137,7 @@ export class AuthService {
         throw new ForbiddenException();
       }
 
-      const payload: Payload = {
+      const payload: JwtPayloadType = {
         sub: dto.user.sub,
         user_type: dto.user.user_type,
       };

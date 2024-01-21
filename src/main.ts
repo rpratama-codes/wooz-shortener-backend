@@ -6,6 +6,7 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config = app.get(ConfigService);
+
   app.enableCors({
     origin: config.get<string>('FE_URL'),
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -19,4 +20,5 @@ async function bootstrap() {
 
   await app.listen(parseInt(config.get<string>('APP_PORT')) || 3000);
 }
+
 bootstrap();
