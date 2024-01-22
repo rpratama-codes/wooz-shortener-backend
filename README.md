@@ -18,14 +18,16 @@
   - [Routing Table](#routing-table)
   - [The story how do i get the algorithm](#the-story-how-do-i-get-the-algorithm)
     - [Shortener Algorithm / random text](#shortener-algorithm--random-text)
-  - [Project Stack](#project-stack)
-    - [FrontEnd](#frontend)
-    - [Backend](#backend)
   - [Frontend Project](#frontend-project)
 
 ## Description
 
 Woozify is a service that allows users to shorten URLs and generate QR codes. The features include shortening URLs, providing engagement analytics, and a QR Maker. The pricing types are guest, free, and paid.
+
+Developer : Rizqi Pratama  
+Deploy on : Adaptable  
+Deployment URL : <https://wooz.adaptable.app>  
+Tech Stack : NestJS, Typescript, PostgreSQL, Redis, PrismaORM, Docker (For Development)
 
 ## Project Challange
 
@@ -50,11 +52,11 @@ Optional features:
 3. Setup the Environment Variable
 4. Install Dependencies ``yarn install``
 5. Run Database Migration & Seed
-6. Start the app ``yarn dev``
+6. Start the app ``yarn start:dev``
 
 ### On Production
 
-There are various ways to run the application in production. Every detailed step is important, and you also need some knowledge about your cloud provider to run this app. For this, you can read the documentation provided by your cloud provider.
+There are various ways to run the application in production. Every detailed step is important, please refer to documentation provided by your cloud provider.
 
 ## Environment Variable
 
@@ -172,20 +174,6 @@ So, as the file ``src/wooz/wooz.service.ts``, the final result will be:
     return shortUrl;
   }
 ```
-
-## Project Stack
-
-### FrontEnd
-
-- NextJS + TypeScript
-- Other necessary libraries
-
-### Backend
-
-- NestJS + TypeScript
-- Postgres + Redis
-- Docker
-- Other necessary libraries
 
 ## Frontend Project
 
