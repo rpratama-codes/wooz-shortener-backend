@@ -2,7 +2,7 @@ import { CacheModuleAsyncOptions } from '@nestjs/cache-manager';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { redisStore } from 'cache-manager-redis-store';
 
-export const redisConfig: CacheModuleAsyncOptions = {
+export const ChaceConfigService: CacheModuleAsyncOptions = {
   isGlobal: true,
   imports: [ConfigModule],
   useFactory: async (config: ConfigService) => {
