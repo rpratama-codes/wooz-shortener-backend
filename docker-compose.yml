@@ -2,24 +2,24 @@
 version: '3.8'
 services:
   dev-db:
-    image: postgres:15
+    image: postgres:15.5-alpine3.18
     restart: always
     ports:
       - 5434:5432
     environment:
-      POSTGRES_DB: postgres
+      POSTGRES_DB: wooz_dev_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: good-password
+      POSTGRES_PASSWORD: good_password
 
   test-db:
-    image: postgres:15
+    image: postgres:15.5-alpine3.18
     restart: always
     ports:
       - 5435:5432
     environment:
-      POSTGRES_DB: postgres
+      POSTGRES_DB: wooz_test_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: good-password
+      POSTGRES_PASSWORD: good_password
 
   redis:
     image: redis:6.2-alpine
