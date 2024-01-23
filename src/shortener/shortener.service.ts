@@ -34,7 +34,7 @@ export class ShortenerService {
       const httpCheck: boolean = url_original.includes('http://');
       const httpsCheck: boolean = url_original.includes('https://');
 
-      if (!httpCheck || !httpsCheck) {
+      if (!httpCheck && !httpsCheck) {
         throw new BadRequestException([
           'Only url start with http or https are support, thankyou!',
         ]);
