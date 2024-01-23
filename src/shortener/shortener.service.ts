@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ForbiddenException,
   HttpException,
   HttpStatus,
@@ -34,11 +35,9 @@ export class ShortenerService {
       const httpsCheck: boolean = url_original.includes('https://');
 
       if (!httpCheck || !httpsCheck) {
-        return {
-          message: ['Only url start with http or https are support, thankyou!'],
-          error: 'Bad Request',
-          statusCode: 400,
-        };
+        throw new BadRequestException([
+          'Only url start with http or https are support, thankyou!',
+        ]);
       }
 
       const url_short: string = this.woozService.generateFourLetter();
