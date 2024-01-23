@@ -29,6 +29,18 @@ export class ShortenerService {
     user: UserFromJwt | undefined = undefined,
   ) {
     try {
+      const url_original: string = dto.url;
+      const httpCheck: boolean = url_original.includes('http://');
+      const httpsCheck: boolean = url_original.includes('https://');
+
+      if (!httpCheck || !httpsCheck) {
+        return {
+          message: ['Only url start with http or https are support, thankyou!'],
+          error: 'Bad Request',
+          statusCode: 400,
+        };
+      }
+
       const url_short: string = this.woozService.generateFourLetter();
       const url_uid: string = uuidv4();
       const currentDate = new Date();
@@ -54,7 +66,7 @@ export class ShortenerService {
 
       const url = await this.prisma.urls.create({
         data: {
-          url_original: dto.url,
+          url_original,
           url_short,
           url_ttl,
           url_uid,
