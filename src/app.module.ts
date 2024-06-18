@@ -6,7 +6,6 @@ import { WoozModule } from './wooz/wooz.module';
 import { ShortenerModule } from './shortener/shortener.module';
 import { AnalyticModule } from './analytic/analytic.module';
 import { CacheModule } from '@nestjs/cache-manager';
-import { ChaceConfigService } from './configs/ChaceConfigService';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { throttlerConfigService } from './configs/throttlerConfigService';
@@ -20,7 +19,9 @@ import { ConfigsModule } from './configs/configs.module';
     ThrottlerModule.forRootAsync({
       useClass: throttlerConfigService,
     }),
-    CacheModule.registerAsync(ChaceConfigService),
+    CacheModule.register({
+      isGlobal: true,
+    }),
     PrismaModule,
     AuthModule,
     WoozModule,
