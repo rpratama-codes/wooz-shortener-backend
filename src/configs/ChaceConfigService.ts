@@ -7,11 +7,7 @@ export const ChaceConfigService: CacheModuleAsyncOptions = {
   imports: [ConfigModule],
   useFactory: async (config: ConfigService) => {
     const store = await redisStore({
-      socket: {
-        host: config.get<string>('REDIS_HOST'),
-        port: parseInt(config.get<string>('REDIS_PORT')),
-      },
-      password: config.get<string>('REDIS_PASSWORD'),
+      url: config.get<string>('REDIS_URL'),
       ttl: parseInt(config.get<string>('REDIS_CACHE_TTL')) || 30,
     });
     return {
