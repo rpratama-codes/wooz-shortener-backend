@@ -1,6 +1,13 @@
 # Use postgres/example user/password credentials
 version: '3.8'
 services:
+  app:
+    image: wooz:test
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+
   dev-db:
     image: postgres:15.5-alpine3.18
     restart: always
