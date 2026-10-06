@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wooz-backend
+  labels:
+    app: wooz-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wooz-backend
+  template:
+    metadata:
+      labels:
+        app: wooz-backend
+    spec:
+      containers:
+        - name: wooz-backend
+          image: rizqipratama1st/wooz-gw-svc:latest
+          ports:
+            - containerPort: 3000
+              name: http
+          envFrom:
+            - secretRef:
+                name: wooz-backend-secret
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 15
+            periodSeconds: 20
