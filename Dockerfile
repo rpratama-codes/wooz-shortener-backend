@@ -6,13 +6,13 @@ WORKDIR /app
 # 2. Dependencies stage
 FROM base AS dependencies
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile && \
+    yarn prisma generate
 
 # 3. Builder stage
 FROM base AS builder
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
-RUN yarn prisma generate
 RUN yarn run build
 
 # 4. Final production runtime stage
