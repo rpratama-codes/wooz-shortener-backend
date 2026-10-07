@@ -1,28 +1,29 @@
-# 1. Base stage: Install dependencies & OpenSSL for Alpine
-FROM node:24-alpine AS base
+# 1. Base stage: Set platform to BUILDPLATFORM so apk/yarn run natively on host architecture
+FROM --platform=$BUILDPLATFORM node:24-alpine AS base
 RUN apk add --no-cache openssl
 WORKDIR /app
+
+# 2. Dependencies stage
+FROM base AS dependencies
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
-# 2. Builder stage: Generate Prisma client and build application
+# 3. Builder stage
 FROM base AS builder
-WORKDIR /app
+COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
-# Generate Prisma client with the correct binary engine for Alpine
 RUN yarn prisma generate
 RUN yarn run build
 
-# 3. Production stage: Minimal runtime image
-FROM node:24-alpine AS production
-# OpenSSL is required at runtime by Prisma's query engine
+# 4. Final production runtime stage
+FROM --platform=$BUILDPLATFORM node:24-alpine AS production
 RUN apk add --no-cache openssl
 WORKDIR /app
 
 ENV NODE_ENV=production
 
 COPY package.json yarn.lock ./
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=dependencies /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
