@@ -6,20 +6,80 @@ on:
       - main
 
 env:
-  # Replace with your Docker Hub username/organization and repository name
   DOCKERHUB_USERNAME: rizqipratama1st
   IMAGE_NAME: rizqipratama1st/wooz-backend
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
+  # 1. Build native architecture images in parallel
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux/amd64
+          - os: ubuntu-24.04-arm
+            platform: linux/arm64
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up QEMU for multi-architecture builds
-        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_NAME }}
+
+      # Build & push by digest to avoid tag collision during parallel builds
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: ${{ matrix.platform }}
+          labels: ${{ steps.meta.outputs.labels }}
+          outputs: type=image,name=${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=${{ matrix.platform }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.platform }}
+
+      - name: Export digest artifact
+        run: |
+          mkdir -p /tmp/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "/tmp/digests/${digest#sha256:}"
+
+      - name: Upload digest artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ matrix.platform == 'linux/amd64' && 'amd64' || 'arm64' }}
+          path: /tmp/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  # 2. Merge digests into unified multiplatform image tags
+  merge:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Download all digests
+        uses: actions/download-artifact@v4
+        with:
+          path: /tmp/digests
+          pattern: digests-*
+          merge-multiple: true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -33,11 +93,10 @@ jobs:
       - name: Generate timestamp version tag
         id: timestamp
         run: |
-          # Formats date-time as YYYYMMDD-HHMMSS (e.g., 20261007-084905)
           TAG=$(date +'%Y%m%d-%H%M%S')
           echo "VERSION_TAG=${TAG}" >> $GITHUB_OUTPUT
 
-      - name: Extract metadata (tags, labels) for Docker Hub
+      - name: Extract metadata for final manifest
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -46,13 +105,8 @@ jobs:
             type=raw,value=${{ steps.timestamp.outputs.VERSION_TAG }}
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
 
-      - name: Build and push multiplatform Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Create and push multi-architecture manifest
+        working-directory: /tmp/digests
+        run: |
+          docker buildx imagetools create $(jq -r '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf '${{ env.IMAGE_NAME }}@sha256:%s ' *)

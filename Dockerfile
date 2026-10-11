@@ -5,6 +5,7 @@ WORKDIR /app
 
 # 2. Dependencies stage
 FROM base AS dependencies
+COPY prisma ./prisma/
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile && \
     yarn prisma generate
