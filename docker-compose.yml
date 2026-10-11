@@ -2,7 +2,7 @@
 version: '3.8'
 services:
   app:
-    image: rizqipratama1st/wooz-backend:latest
+    image: rizqipratama1st/wooz-backend:20261011-034930
     ports:
       - 3000:3000
     env_file:
