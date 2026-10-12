@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: wooz-backend-svc
+  namespace: wooz
   labels:
     app: wooz-backend
 spec:

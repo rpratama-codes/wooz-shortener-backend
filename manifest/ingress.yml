@@ -2,17 +2,18 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: wooz-backend-ingressroute
+  namespace: wooz
   labels:
     app: wooz-backend
 spec:
   entryPoints:
     - web
-    - websecure
+    # - websecure
   routes:
     - match: Host(`api.wooz.rpratama.web.id`)
       kind: Rule
       services:
         - name: wooz-backend-svc
           port: 3000
-  tls:
-    secretName: {}
+  # tls:
+  #   secretName: {}
