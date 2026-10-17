@@ -8,12 +8,11 @@ metadata:
 spec:
   entryPoints:
     - web
-    # - websecure
+    - websecure
   routes:
     - match: Host(`api.wooz.rpratama.web.id`)
       kind: Rule
       services:
         - name: wooz-backend-svc
           port: 3000
-  # tls:
-  #   secretName: {}
+  tls: {}
